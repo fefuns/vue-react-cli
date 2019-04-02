@@ -1,5 +1,23 @@
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+```
+// 1.全局安装create-react-app
+yarn global add create-react-app@2.1.8
+// 2. 创建项目
+yarn create react-app .
 
+```
+
+```
+1.查询当前配置的镜像
+
+yarn config get registry
+
+> https://registry.yarnpkg.com
+
+设置成淘宝镜像
+
+yarn config set registry http://registry.npm.taobao.org/
+```
 ## Available Scripts
 
 In the project directory, you can run:
