@@ -16,11 +16,11 @@ const { Title } = Typography;
  * In order to be compatible with the old version of the PageHeader
  * basically all the functions are implemented.
  */
-const renderFooter = ({ tabList, activeKeyProps, onTabChange, tabBarExtraContent }) => {
+const renderFooter = ({ tabList, tabActiveKey, onTabChange, tabBarExtraContent }) => {
   return tabList && tabList.length ? (
     <Tabs
       className={styles.tabs}
-      {...activeKeyProps}
+      activeKey={tabActiveKey}
       onChange={key => {
         if (onTabChange) {
           onTabChange(key);
@@ -38,58 +38,74 @@ const renderFooter = ({ tabList, activeKeyProps, onTabChange, tabBarExtraContent
 const PageHeaderWrapper = ({
   children,
   contentWidth,
+  fluid,
   wrapperClassName,
+  home,
   top,
   title,
   content,
   logo,
   extraContent,
+  hiddenBreadcrumb,
   ...restProps
 }) => {
   return (
-    <div style={{ margin: '-24px -24px 0' }} className={classNames(classNames, styles.main)}>
+    <div style={{ margin: '-24px -24px 0' }} className={classNames(wrapperClassName, styles.main)}>
       {top}
-      {title && content && (
-        <MenuContext.Consumer>
-          {value => {
-            return (
-              <PageHeader
-                wide={contentWidth === 'Fixed'}
-                title={
-                  <Title
-                    level={4}
-                    style={{
-                      marginBottom: 0,
-                    }}
-                  >
-                    {title}
-                  </Title>
-                }
-                key="pageheader"
-                {...restProps}
-                breadcrumb={conversionBreadcrumbList({
-                  ...value,
-                  ...restProps,
-                  home: <FormattedMessage id="menu.home" defaultMessage="Home" />,
+      <MenuContext.Consumer>
+        {value => {
+          return (
+            <div className={styles.wrapper}>
+              <div
+                className={classNames({
+                  [styles.wide]: !fluid && contentWidth === 'Fixed',
                 })}
-                className={styles.pageHeader}
-                linkElement={Link}
-                footer={renderFooter(restProps)}
               >
-                <div className={styles.detail}>
-                  {logo && <div className={styles.logo}>{logo}</div>}
-                  <div className={styles.main}>
-                    <div className={styles.row}>
-                      {content && <div className={styles.content}>{content}</div>}
-                      {extraContent && <div className={styles.extraContent}>{extraContent}</div>}
+                <PageHeader
+                  title={
+                    <>
+                      {logo && <span className={styles.logo}>{logo}</span>}
+                      <Title
+                        level={4}
+                        style={{
+                          marginBottom: 0,
+                          display: 'inline-block',
+                        }}
+                      >
+                        {title}
+                      </Title>
+                    </>
+                  }
+                  key="pageheader"
+                  {...restProps}
+                  breadcrumb={
+                    !hiddenBreadcrumb &&
+                    conversionBreadcrumbList({
+                      ...value,
+                      ...restProps,
+                      ...(home !== null && {
+                        home: <FormattedMessage id="menu.home" defaultMessage="Home" />,
+                      }),
+                    })
+                  }
+                  className={styles.pageHeader}
+                  linkElement={Link}
+                  footer={renderFooter(restProps)}
+                >
+                  <div className={styles.detail}>
+                    <div className={styles.main}>
+                      <div className={styles.row}>
+                        {content && <div className={styles.content}>{content}</div>}
+                        {extraContent && <div className={styles.extraContent}>{extraContent}</div>}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </PageHeader>
-            );
-          }}
-        </MenuContext.Consumer>
-      )}
+                </PageHeader>
+              </div>
+            </div>
+          );
+        }}
+      </MenuContext.Consumer>
       {children ? (
         <div className={styles['children-content']}>
           <GridContent>{children}</GridContent>
